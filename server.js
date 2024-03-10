@@ -1,8 +1,7 @@
-// server.js
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const CityModel = require("./models/City");
+const connectToDatabase = require("./database/db");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,17 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://itanuranjan:ePcw9wWRr8dyoo5k@venturevibe.8usckwk.mongodb.net/?retryWrites=true&w=majority&appName=VentureVibe", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  authSource: "admin",
-});
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-db.once("open", () => {
-  console.log("Connected to MongoDB");
-});
+connectToDatabase();
 
 // API endpoint to insert a new city
 app.post("/api/cities", async (req, res) => {
