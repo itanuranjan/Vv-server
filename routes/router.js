@@ -1,6 +1,12 @@
 const express = require("express");
-const router = express.Router();
+const router = new express.Router();
+const controllers = require("../controllers/userControllers");
 const City = require("../models/City"); // Assuming your City model is defined in City.js
+
+
+router.post("/user/register",controllers.userregister);
+router.post("/user/sendotp",controllers.userOtpSend);
+router.post("/user/login",controllers.userLogin);
 
 // Route to get all cities
 router.get("/api/cities", async (req, res) => {
@@ -12,16 +18,9 @@ router.get("/api/cities", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// router.get("/api/health", (req, res) => {
-
-//     response.status(200).json({message :"server is healthy"});
-  
-// });
 
 
-  
 
 
-// Additional routes for creating, updating, or deleting cities can be added here
 
 module.exports = router;
