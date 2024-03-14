@@ -1,12 +1,14 @@
 require("dotenv").config();
 const express = require('express');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 const router = require("./routes/router");
 const CityModel = require('./models/City');
 const TopRecommented = require('./models/TopRecommented');
 const ThingsToDo = require('./models/ThingsToDo');
 const HeroModel = require('./models/Hero');
 const connectToDatabase = require('./database/db');
+const Query = require('./models/queryModel');
 const app = express();
 const port = 5000;
 
@@ -17,10 +19,52 @@ app.use(router);
 // Connect to MongoDB
 connectToDatabase();
 
-
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 
 // API endpoint to insert data
+
+// API endpoint to handle query submission
+app.post('/api/query', async (req, res) => {
+  try {
+    const { name, email, phone, query } = req.body;
+    const newQuery = new Query({ name, email, phone, query });
+    await newQuery.save();
+    res.json(newQuery);
+
+    // Send email notification
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_RECEIVER,
+      subject: 'New Query',
+      text: `
+        Name: ${name}
+        Email: ${email}
+        Phone: ${phone}
+        Query: ${query}
+      `,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  } catch (error) {
+    console.error('Error inserting/querying:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/api/cities', async (req, res) => {
   try {
     const { title, description, imageUrl, route } = req.body;
