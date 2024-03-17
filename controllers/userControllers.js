@@ -71,9 +71,19 @@ exports.userOtpSend = async (req, res) => {
                 const mailOptions = {
                     from: process.env.EMAIL,
                     to: email,
-                    subject: "Sending Eamil For Otp Validation",
-                    text: `OTP:- ${OTP}`
-                }
+                    subject: "OTP Validation for VentureVibes",
+                    html: `
+                        <div style="background-color: #007bff; padding: 20px; text-align: center; color: #fff;">
+                            <h2>Welcome to VentureVibes!</h2>
+                            <p>Please use the following OTP to validate your email:</p>
+                            <h1 style="font-size: 48px; margin: 20px 0;">${OTP}</h1>
+                            <p>If you didn't request this OTP, please ignore this email.</p>
+                            <p>Thanks,</p>
+                            <p>The VentureVibes Team</p>
+                        </div>
+                    `
+                };
+                
 
 
                 tarnsporter.sendMail(mailOptions, (error, info) => {
