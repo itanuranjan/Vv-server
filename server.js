@@ -9,6 +9,7 @@ const ThingsToDo = require('./models/ThingsToDo');
 const HeroModel = require('./models/Hero');
 const connectToDatabase = require('./database/db');
 const Query = require('./models/queryModel');
+const userSchema = require ("./models/userSchema")
 const app = express();
 const port = 5000;
 
@@ -171,6 +172,19 @@ app.get('/api/thingstodo', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+app.get('/api/user', async (req, res) => {
+  try {
+    const { email } = req.query;
+    const user = await userSchema.findOne({ email }, { fname: 1, email: 1, _id: 0 }); // Include only name and email fields, exclude _id
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 
 

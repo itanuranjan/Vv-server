@@ -7,6 +7,8 @@ const City = require("../models/City"); // Assuming your City model is defined i
 router.post("/user/register",controllers.userregister);
 router.post("/user/sendotp",controllers.userOtpSend);
 router.post("/user/login",controllers.userLogin);
+router.post("/user/profile", controllers.userOperation);
+
 
 // Route to get all cities
 router.get("/api/cities", async (req, res) => {

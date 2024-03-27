@@ -13,6 +13,40 @@ const tarnsporter = nodemailer.createTransport({
 })
 
 
+exports.userOperation = async (req, res) => {
+    const { fname, email } = req.body;
+    const { id } = req.params;
+
+    try {
+        if (!id) {
+            return res.status(400).json({ error: "User ID is required for profile update" });
+        }
+
+        const updatedUserData = {};
+
+        if (fname) {
+            updatedUserData.fname = fname;
+        }
+
+        if (email) {
+            updatedUserData.email = email;
+        }
+
+        const updatedUser = await users.findByIdAndUpdate(id, updatedUserData, { new: true });
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.status(200).json(updatedUser);
+    } catch (error) {
+        return res.status(400).json({ error: "Invalid Details", error });
+    }
+};
+
+
+
+
 exports.userregister = async (req, res) => {
     const { fname, email, password } = req.body;
 
@@ -30,7 +64,7 @@ exports.userregister = async (req, res) => {
                 fname, email, password
             });
 
-            // here password hasing
+            // here password hasing 
 
             const storeData = await userregister.save();
             res.status(200).json(storeData);
