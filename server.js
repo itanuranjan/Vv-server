@@ -10,6 +10,8 @@ const HeroModel = require('./models/Hero');
 const connectToDatabase = require('./database/db');
 const Query = require('./models/queryModel');
 const userSchema = require ("./models/userSchema")
+const VerifyModel = require ("./models/VerifyModel");
+const students = require('./studentsData');
 const app = express();
 const port = 5000;
 
@@ -28,6 +30,17 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+
+
+// Save all student data to the database
+VerifyModel.insertMany(students)
+  .then(() => console.log("All student data saved successfully"))
+  .catch(error => console.error("Error saving student data:", error));
+
+
+
+
+
 
 
 // API endpoint to insert data
@@ -186,7 +199,16 @@ app.get('/api/user', async (req, res) => {
 });
 
 
-
+app.get('/api/userdata', async (req, res) => {
+  try {
+    const { CERTIFICATION_ID } = req.query;
+    const userdata = await VerifyModel.findOne({ CERTIFICATION_ID });
+    res.json(userdata); // Returning the user object retrieved from the database
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 
 app.get('/api/health', (req, res) => {
