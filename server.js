@@ -12,8 +12,84 @@ const Query = require('./models/queryModel');
 const userSchema = require ("./models/userSchema")
 const VerifyModel = require ("./models/VerifyModel");
 const students = require('./studentsData');
+const { Server } = require("socket.io");
+const http = require("http");
 const app = express();
-const port = 5000;
+const port = 6000;
+
+
+// Create HTTP server for Socket.IO
+const server = http.createServer(app);
+
+
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://venturevibe-client.onrender.com'],  // List allowed origins for HTTP API
+  // methods: ['GET', 'POST'],
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));  // Apply CORS middleware to Express API
+
+
+// Initialize Socket.IO with custom path and CORS configuration
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "https://venturevibe-client.onrender.com"],  // Allow local and deployed frontend URLs explicitly
+    credentials: true,  // Allow cookies, authorization headers, etc. to be sent
+  }
+});
+
+// Socket.IO Connection Logic
+const quotes = [
+  "The only way to do great work is to love what you do. – Steve Jobs",
+  "The purpose of our lives is to be happy. – Dalai Lama",
+  "In the end, we will remember not the words of our enemies, but the silence of our friends. – Martin Luther King Jr.",
+  "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment. – Ralph Waldo Emerson",
+  "The best time to plant a tree was 20 years ago. The second best time is now. – Chinese Proverb",
+  "It is never too late to be what you might have been. – George Eliot",
+];
+
+// Static token for authentication (replace with real authentication if needed)
+const validToken = "12345";
+
+io.on("connection", (socket) => {
+  const { token } = socket.handshake.query;  // Get token from query parameters
+
+  if (token !== validToken) {
+    console.log("Invalid Token");
+    socket.emit("error", "Invalid token. Authentication failed.");
+    socket.disconnect();
+    return;
+  }
+
+  console.log("User Connected", socket.id);
+
+  // Handle incoming messages
+  socket.on("message", ({ room, message }) => {
+    console.log({ room, message });
+
+    // Send a random quote with the message
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // Emit the message along with a random quote
+    socket.to(room).emit("receive-message", { message, quote: randomQuote });
+
+    // Emit the quote to the user who sent the message as well
+    socket.emit("receive-quote", randomQuote);
+  });
+
+  // Handle room joining
+  socket.on("join-room", (room) => {
+    socket.join(room);
+    console.log(`User joined room ${room}`);
+  });
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log("User Disconnected", socket.id);
+  });
+});
+
 
 app.use(cors());
 app.use(express.json());
@@ -218,3 +294,6 @@ app.get('/api/health', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+// io.listen(9000);
+
