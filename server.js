@@ -25,7 +25,7 @@ const server = http.createServer(app);
 const corsOptions = {
   origin: ['http://localhost:5173', 'https://venturevibe-client.onrender.com'],  // List allowed origins for HTTP API
   // methods: ['GET', 'POST'],
-  credentials: true, 
+  credentials: true,  // Allow sending credentials (cookies, headers)
 };
 
 app.use(cors(corsOptions));  // Apply CORS middleware to Express API
@@ -295,5 +295,5 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// io.listen(9000);
+io.listen(9000);
 
