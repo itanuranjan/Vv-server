@@ -34,9 +34,10 @@ app.use(cors(corsOptions));  // Apply CORS middleware to Express API
 // Initialize Socket.IO with custom path and CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://venturevibe-client.onrender.com"],  // Allow local and deployed frontend URLs explicitly
-    credentials: true,  // Allow cookies, authorization headers, etc. to be sent
-  }
+    origin: ["http://localhost:5173", "https://venturevibe-client.onrender.com"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 // Socket.IO Connection Logic
@@ -291,9 +292,12 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is healthy' });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+server.listen(port, () => {
+  console.log("Server running on port 5000");
 });
 
-io.listen(9000);
 
