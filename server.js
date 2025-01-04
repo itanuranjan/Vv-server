@@ -24,11 +24,11 @@ const server = http.createServer(app);
 // Initialize Socket.IO with custom path and CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173/",  // Replace with your frontend URL
+    origin: ["http://localhost:5173", "https://venturevibe-client.onrender.com"],  // Allow local and deployed frontend URLs
     methods: ["GET", "POST"],
     credentials: true,
   },
-
+  // No need for 'path' here since you are using the default `/socket.io` path
 });
 
 // Socket.IO Connection Logic
