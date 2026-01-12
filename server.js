@@ -290,6 +290,7 @@ app.get('/api/userdata', async (req, res) => {
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is healthy' });
+  console.log("CLick");
 });
 
 // app.listen(port, () => {
