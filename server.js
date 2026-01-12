@@ -288,9 +288,20 @@ app.get('/api/userdata', async (req, res) => {
 });
 
 
+
+
+
+let healthCheckCount = 0;
+
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ message: 'Server is healthy' });
-  console.log("CLick");
+  healthCheckCount++;
+
+  console.log("Click count:", healthCheckCount);
+
+  res.status(200).json({
+    message: 'Server is healthy',
+    count: healthCheckCount
+  });
 });
 
 // app.listen(port, () => {
